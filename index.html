@@ -1,148 +1,42 @@
-<!DOCTYPE html>
+<!DOCTYPE HTML>
 <html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,user-scalable=no" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="支付提示" />
+<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+<meta name="author" content="aaaa" />
+<meta name="format-detection" content="telephone=no,email=no" />
+<meta http-equiv="x-rim-auto-match" content="none" />
+<meta name="applicable-device" content="mobile" />
+<meta name="x5-orientation" content="portrait" />
+<meta name="full-screen" content="yes" />
+<meta name="x5-fullscreen" content="true" />
+<meta name="browsermode" content="application" />
+<title>支付提示</title>
+<style>
+    *{ margin:0; padding: 0;}
+	.m-pay-tips {}
+	.tips-green {font-size: 16px; line-height: 1.5; color:green; text-align: center;margin-top: 40px;}
+	.tips-p {padding:0 30px; font-size: 12px; line-height: 1.5; color:#333; margin-top: 20px;}
+	.qr-code {margin-top:40px;}
+	.qr-code img {display:block; width:100px; height:100px; margin:0 auto;}
+	.qr-code p { font-size: 12px; line-height: 1.5; color:#333; text-align: center; }
+</style>
+</head>
 
-	<head>
-		<meta charset="UTF-8">
-		<title></title>
-	</head>
-	<style type="text/css">
-		canvas {
-			display: block;
-			margin: 20px auto;
-			box-shadow: 4px 4px 5px #8e8e8e;
-		}
-	</style>
-
-	<body>
-
-		<canvas id="canvas"></canvas>
-
-		<script>
-			var canvas = document.getElementById('canvas');
-			canvas.width = 1200;
-			canvas.height = 800;
-			var context = canvas.getContext('2d');
-			
-			
-            //绘制星星
-			var grd = context.createLinearGradient(0, 0, 0, canvas.height);
-			grd.addColorStop(0.0, '#000');
-			grd.addColorStop(1.0, "#038");
-			context.fillStyle = grd;
-			context.fillRect(0, 0, canvas.width, canvas.height);
-         
-			for(var i = 0; i < 200; i++) {
-				var R = Math.random() * 6 + 4;
-				var x = Math.random() * canvas.width;
-				var y = Math.random() * canvas.height * 0.5;
-				var rot = Math.random() * 360;
-				drawStar(context, x, y, R, rot);
-			}
-
-			function drawStar(cxt, x, y, R, rot) {
-				cxt.save();
-
-				cxt.translate(x, y);
-				cxt.rotate(rot / 180 * Math.PI);
-				cxt.scale(R, R)
-				starPath(cxt);
-
-				cxt.fillStyle = "#FB3";
-				//cxt.strokeStyle = "#fD5";
-				//cxt.lineWidth = 3;
-				//cxt.lineJoin = 'round';
-				cxt.fill();
-				//cxt.stroke();
-				cxt.restore();
-			}
-
-			function starPath(cxt) {
-				cxt.beginPath();
-				for(var i = 0; i < 5; i++) {
-					cxt.lineTo(Math.cos((18 + i * 72) / 180 * Math.PI), -Math.sin((18 + i * 72) / 180 * Math.PI));
-					cxt.lineTo(Math.cos((54 + i * 72) / 180 * Math.PI) * 0.5, -Math.sin((54 + i * 72) / 180 * Math.PI) * 0.5);
-				}
-				cxt.closePath();
-
-			}
-			
-			
-			//绘制月亮
-			fillMoon(context,2,900,200,100,30)
-			function fillMoon(cxt,d,x,y,R,rot,fillColor){
-				cxt.save();
-				cxt.translate(x,y);
-	            cxt.rotate(rot/180*Math.PI);
-	            cxt.scale(R,R);
-				pathMoon(cxt,d);
-				cxt.fillStyle = fillColor || "#fd5";
-				cxt.fill();
-				cxt.restore();
-			}
-			
-			
-			function pathMoon(cxt,d){
-				cxt.beginPath();
-				cxt.arc(0,0,1,0.5*Math.PI,1.5*Math.PI,true);
-			    cxt.moveTo(0,-1);
-			    cxt.arcTo(d,0,0,1,dis(0,-1,d,0)/d);
-				cxt.closePath();
-			}
-			
-			
-			function dis(x1,y1,x2,y2){
-				return Math.sqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2));
-			}
-			
-			
-			//绘制草地
-			drawLand(context);
-			function drawLand(cxt){
-				cxt.save();
-				
-				cxt.beginPath();
-				cxt.moveTo(0,500);
-				cxt.bezierCurveTo(540,400,660,800,1200,500);
-				cxt.lineTo(1200,800);
-				cxt.lineTo(0,800);
-				cxt.closePath();
-				
-				var landStyle = cxt.createLinearGradient(0,800,0,0);
-				    landStyle.addColorStop(0.0,'#030');
-				    landStyle.addColorStop(1.0,'#580');
-				cxt.fillStyle = landStyle;
-				cxt.fill();
-				cxt.restore();
-			}
-			
-			//绘制文字
-			var backgroundImage = new Image();
-			    backgroundImage.src = 'img/33.jpg';
-			    backgroundImage.onload = function(){
-			    	var pattern = context.createPattern(backgroundImage,'repeat');
-			        context.fillStyle = pattern;
-			        context.font = "bold 50px sans-serif";
-			        context.fillText('让我们一起探索CANVAS吧!',20,640);
-			       }
-			    
-			    
-			    var lineGrad = context.createLinearGradient(0,0,800,0);
-			        lineGrad.addColorStop(0.0,'white');
-			        lineGrad.addColorStop(0.2,'blue');
-			        lineGrad.addColorStop(0.4,'white');
-			        lineGrad.addColorStop(0.6,'purple');
-			        lineGrad.addColorStop(0.8,'yellow');
-			        lineGrad.addColorStop(1.0,'red');
-			   
-			    context.fillStyle = lineGrad;
-			    
-			    context.font = "bold 60px sans-serif"
-			    context.fillText('--加油！',620,700);
-			    
-			    context.strokeStyle = lineGrad;
-			    context.strokeText('Oh yeah!',860,700)
-		</script>
-	</body>
-
+<body>
+    <div class="m-pay-tips">
+    	<h2 class="tips-green">恭喜您支付成功！</h2>
+    	<p class="tips-p">订单已在龙之游APP订单列表中，马上下载龙之游APP畅享快乐出行！</p>
+    	<div class="qr-code">
+    		<img src="images/maker/lzy_qr_code.jpg">
+    		<p>长按二维码下载龙之游APP</p>
+    	</div>
+    </div>
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <script type="text/javascript" src="js/public.js"></script>
+</body>
 </html>
-   
