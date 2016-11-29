@@ -1,42 +1,132 @@
-<!DOCTYPE HTML>
+
+<!DOCTYPE html>
 <html>
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,user-scalable=no" />
-<meta name="apple-mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-status-bar-style" content="black">
-<meta name="apple-mobile-web-app-title" content="支付提示" />
-<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
-<meta name="author" content="aaaa" />
-<meta name="format-detection" content="telephone=no,email=no" />
-<meta http-equiv="x-rim-auto-match" content="none" />
-<meta name="applicable-device" content="mobile" />
-<meta name="x5-orientation" content="portrait" />
-<meta name="full-screen" content="yes" />
-<meta name="x5-fullscreen" content="true" />
-<meta name="browsermode" content="application" />
-<title>支付提示</title>
-<style>
-    *{ margin:0; padding: 0;}
-	.m-pay-tips {}
-	.tips-green {font-size: 16px; line-height: 1.5; color:green; text-align: center;margin-top: 40px;}
-	.tips-p {padding:0 30px; font-size: 12px; line-height: 1.5; color:#333; margin-top: 20px;}
-	.qr-code {margin-top:40px;}
-	.qr-code img {display:block; width:100px; height:100px; margin:0 auto;}
-	.qr-code p { font-size: 12px; line-height: 1.5; color:#333; text-align: center; }
-</style>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+	<title>Canvas Clock</title>
+	<style type="text/css">
+		div { margin-top: 100px; text-align: center; }
+	</style>
 </head>
-
 <body>
-    <div class="m-pay-tips">
-    	<h2 class="tips-green">恭喜您支付成功！</h2>
-    	<p class="tips-p">订单已在龙之游APP订单列表中，马上下载龙之游APP畅享快乐出行！</p>
-    	<div class="qr-code">
-    		<img src="lzy_qr_code.jpg">
-    		<p>长按二维码下载龙之游APP</p>
-    	</div>
-    </div>
-    <script type="text/javascript" src="js/jquery.min.js"></script>
-    <script type="text/javascript" src="js/public.js"></script>
+	<div>
+		<canvas id="clock" width="300" height="300"></canvas>
+	</div>
+	<script type="text/javascript">
+		var canvas = document.getElementById('clock');
+		var cxt = canvas.getContext('2d');
+		var w = canvas.width;
+		var h = canvas.height;
+		var r = w/2;
+		var rate = w/200;
+
+		function drawBg(){
+			cxt.save();
+			cxt.translate(r,r);
+			cxt.beginPath();
+			cxt.arc(0,0,r-4*rate,0,2*Math.PI);
+			cxt.closePath();
+			cxt.lineWidth = 8*rate;
+			cxt.stroke();
+
+			var hourNumbers = [3,4,5,6,7,8,9,10,11,12,1,2];
+			hourNumbers.forEach(function(number,i){
+				var rad = 2*Math.PI/12*i;
+				var x = (r-30*rate)*Math.cos(rad);
+				var y = (r-30*rate)*Math.sin(rad);
+				cxt.textAlign = "center";
+				cxt.textBaseline = "middle";
+				cxt.font = 16*rate+"px sans-serif";
+				cxt.fillText(number,x,y);
+			})
+		    
+
+		    for (var i = 0; i < 60; i++) {
+		    	var radius = 2*Math.PI/60*i;
+				var x = (r-18*rate)*Math.cos(radius);
+				var y = (r-18*rate)*Math.sin(radius);
+				cxt.beginPath();
+				if(i%5===0){
+					cxt.fillStyle = "#000";
+					cxt.arc(x,y,2*rate,0,2*Math.PI);
+				}else{
+					cxt.fillStyle = "#ccc";
+					cxt.arc(x,y,2*rate,0,2*Math.PI);
+				}
+				cxt.closePath();
+				cxt.fill();		
+		    }
+		}
+
+
+		function drawHour(hour,minute,second){
+			cxt.save();
+			cxt.beginPath();
+			var rad = 2*Math.PI/12*hour;
+			var radm = 2*Math.PI/12/60*minute;
+			var rads = 2*Math.PI/12/60/60*second;
+			cxt.rotate(rad+radm+rads);
+			cxt.lineWidth = 6*rate;
+			cxt.lineCap = "round";
+			cxt.moveTo(0,10*rate);
+			cxt.lineTo(0,-r/2);
+			cxt.stroke();
+			cxt.restore();
+		}
+
+		function drawMinute(minute,second){
+			cxt.save();
+			cxt.beginPath();
+			var rad = 2*Math.PI/60*minute;
+			var rads = 2*Math.PI/60/60*second;
+			cxt.rotate(rad + rads);
+			cxt.lineWidth = 3;
+			cxt.lineCap = "round";
+			cxt.moveTo(0,10*rate);
+			cxt.lineTo(0,-r+30*rate);
+			cxt.stroke();
+			cxt.restore();
+		}
+
+		function drawSecond(second){
+		    cxt.save();
+			cxt.beginPath();
+			var rad = 2*Math.PI/60*second;
+			cxt.rotate(rad);
+		    cxt.fillStyle="#ff0000";
+			cxt.moveTo(-2,20*rate);
+			cxt.lineTo(2,20*rate);
+			cxt.lineTo(1,-r+18*rate);
+			cxt.lineTo(-1,-r+18*rate);
+			cxt.fill();
+			cxt.restore();
+		}
+
+		function drawRound (){
+			cxt.beginPath();
+			cxt.arc(0,0,3*rate,0,2*Math.PI);
+			cxt.closePath();
+			cxt.fillStyle = "#fff";
+			cxt.fill();
+		}
+
+		function run(){
+			cxt.clearRect(0,0,200*rate,200*rate);
+			var now = new Date();
+			var hour = now.getHours();
+			var minute = now.getMinutes();
+			var second = now.getSeconds();
+			drawBg();
+			drawHour(hour,minute,second);
+			drawMinute(minute,second);
+			drawSecond(second);
+			drawRound();
+		    cxt.restore();
+		}
+
+		setInterval(run,1000);
+		
+	</script>
 </body>
 </html>
